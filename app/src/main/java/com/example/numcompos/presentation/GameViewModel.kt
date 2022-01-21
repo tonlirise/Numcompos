@@ -15,7 +15,7 @@ import com.example.numcompos.domain.entity.Question
 import com.example.numcompos.domain.usecases.GenerateQuestionUseCase
 import com.example.numcompos.domain.usecases.GetGameSettingsUseCase
 
-class GameModelView(application: Application) : AndroidViewModel(application) {
+class GameViewModel(application: Application) : AndroidViewModel(application) {
     private val context = application
     private lateinit var gameLevel: Level
     private lateinit var gameSettings: GameSettings
@@ -63,17 +63,19 @@ class GameModelView(application: Application) : AndroidViewModel(application) {
     fun startGame(level: Level) {
         initGameParams(level)
         startTimer()
+        generateNewQuestion()
+        updateProgress()
     }
 
-    fun initGameParams(level: Level) {
+    private fun initGameParams(level: Level) {
         gameLevel = level
         gameSettings = getGameSettingsUseCase(level)
         _minPercent.value = gameSettings.minPercentOfRightAnswer
     }
 
-    fun startTimer() {
+    private fun startTimer() {
         gameTimer = object :
-            CountDownTimer(gameSettings.gameTimeInSeconds * NILLISEC_IN_SEC, NILLISEC_IN_SEC) {
+            CountDownTimer(gameSettings.gameTimeInSeconds * MILLISEC_IN_SEC, MILLISEC_IN_SEC) {
             override fun onTick(p0: Long) {
                 _gameStrTimer.value = timerTickToFormatedStr(p0)
             }
@@ -86,7 +88,7 @@ class GameModelView(application: Application) : AndroidViewModel(application) {
     }
 
     private fun timerTickToFormatedStr(millsec: Long): String {
-        val allSeconds = millsec * NILLISEC_IN_SEC
+        val allSeconds = millsec / MILLISEC_IN_SEC
 
         val minutes = allSeconds / SEC_IN_MIN
         val seconds = allSeconds - minutes * SEC_IN_MIN
@@ -104,7 +106,7 @@ class GameModelView(application: Application) : AndroidViewModel(application) {
         generateNewQuestion()
     }
 
-    fun checkAnswer(answer: Int) {
+    private fun checkAnswer(answer: Int) {
         val rightAnswer = _currQuestion.value?.rightAnswer
         if (answer == rightAnswer) {
             countRightAnswers++
@@ -112,7 +114,7 @@ class GameModelView(application: Application) : AndroidViewModel(application) {
         countQuestions++
     }
 
-    fun updateProgress() {
+    private fun updateProgress() {
         val percent = calPercentOfRightAnswers()
         _percentOfRightAnswer.value = percent
         _answersProgress.value = String.format(
@@ -124,7 +126,10 @@ class GameModelView(application: Application) : AndroidViewModel(application) {
         _enoughPercentOfRightAnswers.value = percent >= gameSettings.minPercentOfRightAnswer
     }
 
-    fun calPercentOfRightAnswers(): Int {
+    private fun calPercentOfRightAnswers(): Int {
+        if(countQuestions == 0 ){
+            return 0
+        }
         return ((countRightAnswers / countQuestions.toDouble()) * 100).toInt()
     }
 
@@ -145,7 +150,7 @@ class GameModelView(application: Application) : AndroidViewModel(application) {
     }
 
     companion object {
-        private const val NILLISEC_IN_SEC = 1000L
+        private const val MILLISEC_IN_SEC = 1000L
         private const val SEC_IN_MIN = 60
     }
 

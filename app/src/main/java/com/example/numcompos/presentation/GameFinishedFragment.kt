@@ -21,13 +21,6 @@ class GameFinishedFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         parsParams()
-
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object
-            : OnBackPressedCallback(true){
-            override fun handleOnBackPressed() {
-                restartGame()
-            }
-        })
     }
 
     override fun onCreateView(
@@ -36,6 +29,17 @@ class GameFinishedFragment : Fragment() {
     ): View? {
         _binding = FragmentGameFinishedBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object
+            : OnBackPressedCallback(true){
+            override fun handleOnBackPressed() {
+                restartGame()
+            }
+        })
     }
 
     override fun onDestroyView() {
