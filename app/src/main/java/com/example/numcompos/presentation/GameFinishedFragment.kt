@@ -30,34 +30,12 @@ class GameFinishedFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupClickListeners()
-        bindViews()
+        binding.gameResult = inArgs.gameResult
     }
 
     private fun setupClickListeners() {
         binding.buttonRetry.setOnClickListener {
             restartGame()
-        }
-    }
-
-    private fun bindViews() {
-        with(binding) {
-            emojiResult.setImageResource(getSmileResId())
-            tvRequiredAnswers.text = String.format(
-                getString(R.string.required_score),
-                inArgs.gameResult.gameSettings.minCountOfRightAnswers
-            )
-            tvScoreAnswers.text = String.format(
-                getString(R.string.score_answers),
-                inArgs.gameResult.countOfRightAnswer
-            )
-            tvRequiredPercentage.text = String.format(
-                getString(R.string.required_percentage),
-                inArgs.gameResult.gameSettings.minPercentOfRightAnswer
-            )
-            tvScorePercentage.text = String.format(
-                getString(R.string.score_percentage),
-                getPercentOfRightAnswers()
-            )
         }
     }
 
@@ -68,15 +46,6 @@ class GameFinishedFragment : Fragment() {
             R.drawable.ic_sad
         }
     }
-
-    private fun getPercentOfRightAnswers() = with(inArgs.gameResult) {
-        if (countOfQuestions == 0) {
-            0
-        } else {
-            ((countOfRightAnswer / countOfQuestions.toDouble()) * 100).toInt()
-        }
-    }
-
 
     override fun onDestroyView() {
         super.onDestroyView()
