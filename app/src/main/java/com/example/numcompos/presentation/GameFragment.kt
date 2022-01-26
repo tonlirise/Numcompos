@@ -51,66 +51,21 @@ class GameFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         observeViewModel()
-        setOnClickListenerForOptions()
     }
 
     private fun observeViewModel(){
-        gameViewModel.gameStrTimer.observe(viewLifecycleOwner){
-            binding.tvTimer.text = it.toString()
-        }
+        binding.gameViewModel = gameViewModel
+        binding.lifecycleOwner = viewLifecycleOwner
 
         gameViewModel.currQuestion.observe(viewLifecycleOwner){
-            binding.tvSum.text = it.sum.toString()
-            binding.tvLeftNumber.text = it.visibleNumber.toString()
             for (i in 0 until tvOptions.size){
                 tvOptions[i].text = it.options[i].toString()
             }
         }
 
-        gameViewModel.percentOfRightAnswer.observe(viewLifecycleOwner){
-            binding.progressBar.progress = it
-        }
-
-        gameViewModel.answersProgress.observe(viewLifecycleOwner){
-            binding.tvAnswersProgress.text = it
-        }
-
-        gameViewModel.enoughContOfRightAsnswers.observe(viewLifecycleOwner){
-            binding.tvAnswersProgress.setTextColor(getColorByState(it))
-        }
-
-        gameViewModel.enoughPercentOfRightAnswers.observe(viewLifecycleOwner){
-            val color = getColorByState(it)
-            binding.progressBar.progressTintList = ColorStateList.valueOf(color)
-        }
-
-        gameViewModel.minPercent.observe(viewLifecycleOwner){
-            binding.progressBar.secondaryProgress = it
-        }
-
-        gameViewModel.answersProgress.observe(viewLifecycleOwner){
-            binding.tvAnswersProgress.text = it
-        }
-
         gameViewModel.gameResult.observe(viewLifecycleOwner){
             launchGameFinishedFragment(it)
         }
-    }
-
-    private fun setOnClickListenerForOptions(){
-        for(tvOption in tvOptions){
-            tvOption.setOnClickListener(){
-                gameViewModel.choseAnswer(tvOption.text.toString().toInt())
-            }
-        }
-    }
-
-    private fun getColorByState(state : Boolean) : Int{
-        val idColor = when(state){
-            true -> android.R.color.holo_green_light
-            false -> android.R.color.holo_red_light
-        }
-        return ContextCompat.getColor(requireContext(), idColor)
     }
 
     override fun onDestroyView() {
